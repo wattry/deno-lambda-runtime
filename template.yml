@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  cp-common-layer
+
+Transform:
+- AWS::Serverless-2016-10-31
+
+Parameters:
+  DenoVersion:
+    Type: String
+    Default: 1.1.0
+
+Resources:
+  DenoRuntime:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: DenoRuntime  
+      ContentUri: ./src/deno
+      Description: !Sub 'Deno runtime V${DenoVersion}'
+      LicenseInfo: MIT
+      RetentionPolicy: Retain
+
+  DenoRuntimePermission:
+    Type: AWS::Lambda::LayerVersionPermission
+    Properties:
+      Action: lambda:GetLayerVersion
+      LayerVersionArn: !Ref DenoRuntime
+      Principal: "*"
+
+  DenoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src
+      MemorySize: 128
+      FunctionName: DenoFunction
+      Handler: hello.handler
+      Runtime: provided
+      Layers:
+        - !Ref DenoRuntime
+      Events:
+        ApiEvent:
+          Type: HttpApi
+
+Outputs:
+  DenoRuntimeARN:
+    Value: !Ref DenoRuntime
+    Export:
+      Name: DenoRuntimeARN

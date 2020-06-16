@@ -1,0 +1,15 @@
+
+scripts:
+  build:
+    cmd: sam build
+    deno_options:
+      allow-env: false
+  deploy:
+    cmd: sam deploy --guided --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+  invoke:
+    cmd: sam local invoke
+globals:
+  deno_options:
+    allow-run: true
+    allow-env: true
+    allow-read: true
